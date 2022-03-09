@@ -1,0 +1,76 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <title>mini chat</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <h1 class="mt-5">MiniChat</h1>
+        <hr />
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <form id="formChat" autocomplete="off">
+            <div class="row mb-2 g-2">
+              <div class="col-auto">
+                <input
+                  type="text"
+                  id="txtNickName"
+                  name="txtNickName"
+                  placeholder="Indique el usuario"
+                  class="form-control form-control-sm" />
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-auto">
+                <input
+                  type="text"
+                  name="txtMensaje"
+                  id="txtMensaje"
+                  class="form-control form-control-sm" />
+              </div>
+              <div class="col-auto">
+                <button id="btnEnviar" type="submit" class="btn btn-secondary btn-sm">
+                  Enviar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-sm-6">
+          <h4>Mensajes</h4>
+          <ul id="listMensaje"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="socket.io/socket.io.js"></script>
+    <script>
+      const txtMensaje = document.querySelector('#txtMensaje');
+      const listMensaje = document.querySelector('#listMensaje');
+      const txtNickName = document.querySelector('#txtNickName');
+      const formChat = document.querySelector('#formChat');
+
+      const socket = io('http://localhost:8080');
+
+      // socket.on('mensaje-bienvenida', (data) => {
+      //   console.log(`${data}`);
+      // });
+
+      formChat.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        socket.emit('mensaje-del-cliente', { user: txtNickName.value, msg: txtMensaje.value });
+        txtMensaje.value = '';
+      });
+
+      socket.on('mensaje-del-server', (payload) => {
+        const { user, msg } = payload;
+        listMensaje.innerHTML += `<li><span class="badge bg-success">${user}</span> ${msg}</li>`;
+      });
+    </script>
+  </body>
+</html>
